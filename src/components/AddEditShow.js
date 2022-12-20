@@ -1,9 +1,13 @@
 import React, { useState } from "react";
+import { useLocation } from "react-router-dom";
 
-function NewShowControlledForm({ handleAddShow }) {
-    const [date, setDate] = useState("")
-    const [venue, setVenue]= useState("")
-    const [cityAndState, setCityAndState] = useState("")
+function AddEditShow() {
+    const location = useLocation();
+    const { previousShow } = location.state || {}
+
+    const [date, setDate] = useState(previousShow?.date || '')
+    const [venue, setVenue]= useState(previousShow?.venue || '')
+    const [cityAndState, setCityAndState] = useState(previousShow?.cityAndState || '')
 
     function changeDate(e) {
         setDate(e.target.value)
@@ -24,21 +28,31 @@ function NewShowControlledForm({ handleAddShow }) {
         setVenue("")
         setCityAndState("")
 
-        const newShow = {
+        const show = {
             date: date,
             venue: venue,
             cityAndState: cityAndState
         }
 
-        fetch("http://localhost:3000/shows", {
+        previousShow ? (
+          fetch(`http://localhost:3000/shows/${previousShow.id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': "application/json"
+            },
+            body: JSON.stringify(show),
+          })
+        ) : ( 
+          fetch("http://localhost:3000/shows", {
             method: "POST",
             headers: {
                 'Content-Type': "application/json"
             },
-            body: JSON.stringify(newShow)
+            body: JSON.stringify(show)
         })
-        handleAddShow(newShow)
+        )
         }
+    
 
         return (
         <div className="wrapper">
@@ -64,8 +78,11 @@ function NewShowControlledForm({ handleAddShow }) {
                 onChange={changeCityAndState}
                 value={cityAndState}>
                 </input>
-
-                <input type="submit" value="Add Show" />
+                { previousShow ? (
+                  <input type='submit' value='Edit Show'/>
+                ) : (
+                  <input type='submit' value="Add Show" />
+                )}
             </form>
 
         </div>
@@ -73,4 +90,4 @@ function NewShowControlledForm({ handleAddShow }) {
 
 }
 
-export default NewShowControlledForm
+export default AddEditShow

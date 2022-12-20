@@ -10,7 +10,7 @@ function Navbar() {
                         <Link to="/shows">Shows</Link>
                     </li>
                     <li>    
-                        <Link to="/shows/new">New Show</Link>
+                        <Link to="/shows/addEditShow">New Show</Link>
                     </li>
                 </ul>
             </nav>
